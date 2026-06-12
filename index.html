@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Senséa — Handcrafted Fragrance</title>
+  <meta name="description" content="Senséa — honoring the intimate connection between nature, emotions, and the senses. Handcrafted perfumes and roll-on oils." />
+
+  <!-- Typography: Playfair Display (poetic high-contrast serif) + Jost (geometric sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS (CDN build — see deployment guide for production notes) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            olive:    { DEFAULT: '#6B705C', light: '#7A8B5E', deep: '#565B49', night: '#3B4032' },
+            forest:   '#2C3324',                 /* deep forest green — headings   */
+            espresso: '#3A3326',                 /* rich espresso — body on cream  */
+            cream:    { DEFAULT: '#F4F1EA', deep: '#EDE7DA', lid: '#F8F4EC' },
+            gold:     { DEFAULT: '#C9A45C', soft: '#D8BC80', deep: '#A97E3F' },
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Jost', 'system-ui', 'sans-serif'],
+          },
+          letterSpacing: { whisper: '0.32em' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ————— Foundations ————— */
+    body { background: #6B705C; color: #EFEBDD; font-feature-settings: 'liga' 1; }
+    ::selection { background: #C9A45C; color: #2C3324; }
+
+    /* Metallic gold — buttons & caps, echoing the bottle caps */
+    .btn-gold {
+      background: linear-gradient(135deg, #E6CD8F 0%, #C9A45C 38%, #A97E3F 72%, #D8BC80 100%);
+      color: #2C3324;
+      transition: transform .35s ease, box-shadow .35s ease, filter .35s ease;
+      box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 10px 28px -12px rgba(43,38,20,.55);
+    }
+    .btn-gold:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 16px 34px -12px rgba(43,38,20,.6); }
+    .btn-gold:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid #D8BC80; outline-offset: 3px;
+    }
+
+    .text-gold-foil {
+      background: linear-gradient(110deg, #E6CD8F 10%, #C9A45C 45%, #A97E3F 65%, #E6CD8F 90%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+
+    /* ————— Signature: blind-emboss ribbon, drawn from the box's looping linework ————— */
+    .emboss {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+    }
+    .emboss svg { position: absolute; opacity: .5; }
+    .emboss path { fill: none; stroke-linecap: round; }
+    .emboss .lo { stroke: rgba(43, 48, 36, .35); }   /* shadow groove  */
+    .emboss .hi { stroke: rgba(244, 241, 234, .14); } /* raised light   */
+    .emboss-on-cream .lo { stroke: rgba(58, 51, 38, .10); }
+    .emboss-on-cream .hi { stroke: rgba(255, 255, 255, .8); }
+
+    /* Hero image treatment — olive duotone wash for cinematic depth */
+    .hero-wash {
+      background:
+        linear-gradient(180deg, rgba(59,64,50,.55) 0%, rgba(107,112,92,.35) 40%, rgba(59,64,50,.82) 100%),
+        linear-gradient(0deg, rgba(107,112,92,.42), rgba(107,112,92,.42));
+    }
+
+    /* Velvet inset — mimics the suede interior of the gift box */
+    .velvet {
+      background:
+        radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 55%),
+        #F4F1EA;
+      box-shadow:
+        inset 0 2px 10px rgba(58,51,38,.16),
+        inset 0 -1px 4px rgba(58,51,38,.08);
+    }
+    .box-frame {
+      background: linear-gradient(180deg, #737861 0%, #65694F 100%);
+      box-shadow: 0 30px 70px -30px rgba(30,33,24,.65), inset 0 1px 0 rgba(244,241,234,.18);
+    }
+    .lid-crease { box-shadow: 0 6px 14px -8px rgba(58,51,38,.35); }
+
+    /* Note pyramid hairlines */
+    .note-row + .note-row { border-top: 1px solid rgba(58,51,38,.12); }
+
+    /* ————— Reveal on scroll ————— */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity 1s cubic-bezier(.2,.6,.2,1), transform 1s cubic-bezier(.2,.6,.2,1); }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal-late { transition-delay: .18s; }
+    .reveal-later { transition-delay: .34s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .btn-gold { transition: none; }
+      html { scroll-behavior: auto; }
+    }
+
+    /* Fine letterspaced rule between sections */
+    .thread { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,164,92,.55), transparent); }
+  </style>
+</head>
+
+<body class="font-sans font-light antialiased">
+
+  <!-- ══════════════════ NAVIGATION ══════════════════ -->
+  <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-olive-night/70 border-b border-cream/10">
+    <nav class="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between" aria-label="Main">
+      <!-- Logo lockup.
+           To use your transparent logo files instead, replace this block with:
+           <img src="assets/logo.png" alt="Senséa" class="h-10 w-auto"> -->
+      <a href="#" class="flex items-center gap-3 group">
+        <svg viewBox="0 0 48 48" class="h-9 w-9" aria-hidden="true">
+          <g fill="none" stroke="#C9A45C" stroke-width="3.4" stroke-linecap="round">
+            <path d="M33 9 C 22 13, 14 19, 19 26 C 23 32, 33 28, 30 20 C 27 12, 14 21, 17 31 C 19 38, 28 40, 34 35" />
+          </g>
+        </svg>
+        <span class="font-serif text-2xl tracking-wide text-cream group-hover:text-gold-soft transition-colors">Sens<span class="italic">é</span>a</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-10 text-[13px] uppercase tracking-whisper text-cream/80">
+        <a href="#timeless-voyage" class="hover:text-gold-soft transition-colors">Collections</a>
+        <a href="#earths-bouquet" class="hover:text-gold-soft transition-colors">Oils</a>
+        <a href="#our-story" class="hover:text-gold-soft transition-colors">Our Story</a>
+        <a href="#contact" class="hover:text-gold-soft transition-colors">Contact</a>
+      </div>
+
+      <a href="#timeless-voyage" class="hidden md:inline-block btn-gold rounded-full px-6 py-2.5 text-[12px] uppercase tracking-[0.2em] font-medium">Shop</a>
+
+      <!-- Mobile menu -->
+      <button id="menuBtn" class="md:hidden p-2 text-cream" aria-label="Open menu" aria-expanded="false">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+      </button>
+    </nav>
+    <div id="mobileMenu" class="md:hidden hidden bg-olive-night/95 backdrop-blur-md border-t border-cream/10">
+      <div class="px-6 py-6 flex flex-col gap-5 text-sm uppercase tracking-whisper text-cream/85">
+        <a href="#timeless-voyage">Collections</a>
+        <a href="#earths-bouquet">Oils</a>
+        <a href="#our-story">Our Story</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <section class="relative min-h-[100svh] flex items-end overflow-hidden">
+    <img src="assets/mysterious-depths.jpg" alt="Senséa perfume set resting on lichen-covered stone among wild daisies"
+         class="absolute inset-0 w-full h-full object-cover object-center" />
+    <div class="hero-wash absolute inset-0"></div>
+
+    <!-- Blind-emboss ribbon drifting through the hero -->
+    <div class="emboss" aria-hidden="true">
+      <svg class="w-[140%] -left-[20%] top-[6%]" viewBox="0 0 1200 600">
+        <path class="lo" stroke-width="2.5" d="M-50 320 C 200 120, 420 480, 640 260 S 1000 80, 1260 300" transform="translate(0,2)"/>
+        <path class="hi" stroke-width="2.5" d="M-50 320 C 200 120, 420 480, 640 260 S 1000 80, 1260 300"/>
+      </svg>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pb-24 pt-44 w-full">
+      <p class="reveal text-[12px] md:text-[13px] uppercase tracking-whisper text-gold-soft mb-7">Handcrafted Fragrance · Est. in nature</p>
+      <h1 class="reveal reveal-late font-serif text-4xl md:text-6xl lg:text-[4.4rem] leading-[1.12] max-w-4xl text-cream font-medium">
+        Honoring the intimate connection between <em class="italic text-gold-foil">nature, emotions,</em> and the senses.
+      </h1>
+      <p class="reveal reveal-later mt-8 max-w-2xl text-base md:text-lg leading-relaxed text-cream/85">
+        Inspired by the delicate transitions of scent and the poetic rhythms of the natural world,
+        Senséa offers a sensorial journey that gently unfolds with refinement.
+      </p>
+      <div class="reveal reveal-later mt-12 flex flex-wrap items-center gap-6">
+        <a href="#timeless-voyage" class="btn-gold rounded-full px-9 py-4 text-[13px] uppercase tracking-[0.22em] font-medium">Discover the Collections</a>
+        <a href="#our-story" class="text-[13px] uppercase tracking-whisper text-cream/80 hover:text-gold-soft transition-colors border-b border-cream/30 pb-1">Our Philosophy</a>
+      </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden md:block" aria-hidden="true">
+      <div class="w-px h-14 bg-gradient-to-b from-transparent via-gold-soft/70 to-transparent"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ SENSORY THREAD ══════════════════ -->
+  <section class="relative bg-olive py-14 overflow-hidden">
+    <div class="emboss" aria-hidden="true">
+      <svg class="w-[160%] -left-[30%] -top-10" viewBox="0 0 1400 200">
+        <path class="lo" stroke-width="2" d="M0 120 C 260 40, 480 190, 720 100 S 1160 30, 1400 130" transform="translate(0,2)"/>
+        <path class="hi" stroke-width="2" d="M0 120 C 260 40, 480 190, 720 100 S 1160 30, 1400 130"/>
+      </svg>
+    </div>
+    <div class="relative max-w-5xl mx-auto px-6 flex flex-wrap justify-center gap-x-10 gap-y-4 text-[12px] uppercase tracking-whisper text-cream/70">
+      <span>Eau de Parfum</span><span class="text-gold-soft">·</span>
+      <span>Roll-on Perfumed Oils</span><span class="text-gold-soft">·</span>
+      <span>Organic Jojoba</span><span class="text-gold-soft">·</span>
+      <span>Crafted by hand</span>
+    </div>
+  </section>
+
+  <!-- ══════════════════ TIMELESS VOYAGE ══════════════════ -->
+  <section id="timeless-voyage" class="relative bg-cream text-espresso py-24 md:py-36 overflow-hidden">
+    <div class="emboss emboss-on-cream" aria-hidden="true">
+      <svg class="w-[120%] -right-[30%] top-[18%]" viewBox="0 0 900 700">
+        <path class="lo" stroke-width="2.5" d="M80 600 C 260 380, 120 220, 360 140 S 760 240, 820 60" transform="translate(0,2)"/>
+        <path class="hi" stroke-width="2.5" d="M80 600 C 260 380, 120 220, 360 140 S 760 240, 820 60"/>
+      </svg>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="grid lg:grid-cols-12 gap-14 lg:gap-20 items-start">
+
+        <!-- Photo — stacks above text on mobile -->
+        <figure class="reveal lg:col-span-5 lg:sticky lg:top-32 order-1">
+          <div class="relative">
+            <div class="absolute -inset-4 md:-inset-6 border border-gold/40 rounded-sm" aria-hidden="true"></div>
+            <img src="assets/timeless-voyage.jpg" alt="Timeless Voyage gift box with Mystic and Rêverie perfumes"
+                 class="relative w-full rounded-sm shadow-[0_36px_80px_-32px_rgba(58,51,38,.45)]" />
+          </div>
+          <figcaption class="mt-6 text-[12px] uppercase tracking-whisper text-espresso/55">Set of two women’s perfumes · 10&nbsp;ml each</figcaption>
+        </figure>
+
+        <!-- Editorial copy + scent profiles -->
+        <div class="lg:col-span-7 order-2">
+          <p class="reveal text-[12px] uppercase tracking-whisper text-gold-deep mb-6">The Collection — for her</p>
+          <h2 class="reveal font-serif text-4xl md:text-5xl leading-[1.15] text-forest font-medium">Timeless <em class="italic">Voyage</em></h2>
+          <p class="reveal reveal-late mt-7 max-w-xl text-base md:text-[17px] leading-relaxed text-espresso/85">
+            Two companion fragrances, presented in an embossed keepsake box. One drifts toward
+            daydream; the other toward dusk. Worn alone or layered, they trace a single journey.
+          </p>
+
+          <div class="mt-14 space-y-10">
+            <!-- Rêverie -->
+            <article class="reveal velvet rounded-sm p-8 md:p-10">
+              <div class="flex items-baseline justify-between gap-4 flex-wrap">
+                <h3 class="font-serif text-3xl text-forest font-medium">Rêverie</h3>
+                <span class="text-[11px] uppercase tracking-whisper text-gold-deep">Eau de Parfum · 10 ml</span>
+              </div>
+              <p class="mt-4 leading-relaxed text-espresso/85">
+                Awakens the senses with a burst of citrus, followed by gentle floral notes,
+                and finishes with sweet, musky vanilla.
+              </p>
+              <dl class="mt-7 text-sm">
+                <div class="note-row py-3 grid grid-cols-[5.5rem_1fr] gap-4">
+                  <dt class="uppercase tracking-[0.2em] text-[11px] text-gold-deep pt-0.5">Opens</dt>
+                  <dd class="text-espresso/80">A burst of citrus</dd>
+                </div>
+                <div class="note-row py-3 grid grid-cols-[5.5rem_1fr] gap-4">
+                  <dt class="uppercase tracking-[0.2em] text-[11px] text-gold-deep pt-0.5">Reveals</dt>
+                  <dd class="text-espresso/80">Gentle floral notes</dd>
+                </div>
+                <div class="note-row py-3 grid grid-cols-[5.5rem_1fr] gap-4">
+                  <dt class="uppercase tracking-[0.2em] text-[11px] text-gold-deep pt-0.5">Rests on</dt>
+                  <dd class="text-espresso/80">Sweet, musky vanilla</dd>
+                </div>
+              </dl>
+            </article>
+
+            <!-- Mystic -->
+            <article class="reveal velvet rounded-sm p-8 md:p-10">
+              <div class="flex items-baseline justify-between gap-4 flex-wrap">
+                <h3 class="font-serif text-3xl text-forest font-medium">Mystic</h3>
+                <span class="text-[11px] uppercase tracking-whisper text-gold-deep">Eau de Parfum · 10 ml</span>
+              </div>
+              <p class="mt-4 leading-relaxed text-espresso/85">
+                Opens with soft coconut and fruity notes, reveals a touch of delicate florals,
+                and rests on a smooth base of vanilla, almond, and woods.
+              </p>
+              <dl class="mt-7 text-sm">
+                <div class="note-row py-3 grid grid-cols-[5.5rem_1fr] gap-4">
+                  <dt class="uppercase tracking-[0.2em] text-[11px] text-gold-deep pt-0.5">Opens</dt>
+                  <dd class="text-espresso/80">Soft coconut, fruity notes</dd>
+                </div>
+                <div class="note-row py-3 grid grid-cols-[5.5rem_1fr] gap-4">
+                  <dt class="uppercase tracking-[0.2em] text-[11px] text-gold-deep pt-0.5">Reveals</dt>
+                  <dd class="text-espresso/80">A touch of delicate florals</dd>
+                </div>
+                <div class="note-row py-3 grid grid-cols-[5.5rem_1fr] gap-4">
+                  <dt class="uppercase tracking-[0.2em] text-[11px] text-gold-deep pt-0.5">Rests on</dt>
+                  <dd class="text-espresso/80">Vanilla, almond, and woods</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+
+          <a href="#contact" class="reveal mt-12 inline-block btn-gold rounded-full px-9 py-4 text-[13px] uppercase tracking-[0.22em] font-medium">Acquire the Set</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="thread"></div>
+
+  <!-- ══════════════════ EARTH'S BOUQUET ══════════════════ -->
+  <section id="earths-bouquet" class="relative bg-olive py-24 md:py-36 overflow-hidden">
+    <div class="emboss" aria-hidden="true">
+      <svg class="w-[130%] -left-[25%] bottom-0" viewBox="0 0 1200 500">
+        <path class="lo" stroke-width="2.5" d="M0 420 C 240 220, 420 460, 660 280 S 1040 120, 1240 320" transform="translate(0,2)"/>
+        <path class="hi" stroke-width="2.5" d="M0 420 C 240 220, 420 460, 660 280 S 1040 120, 1240 320"/>
+      </svg>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="max-w-3xl">
+        <p class="reveal text-[12px] uppercase tracking-whisper text-gold-soft mb-6">The Collection — perfumed oils</p>
+        <h2 class="reveal font-serif text-4xl md:text-5xl leading-[1.15] text-cream font-medium">Earth’s <em class="italic text-gold-foil">Bouquet</em></h2>
+        <p class="reveal reveal-late mt-7 text-base md:text-[17px] leading-relaxed text-cream/85">
+          A curated collection of six roll-on perfumed oils. Each one is a unique blend of organic
+          jojoba oil and natural essential oils, crafted to awaken your senses.
+        </p>
+      </div>
+
+      <!-- Open box photograph -->
+      <figure class="reveal mt-16">
+        <img src="assets/earths-bouquet.jpg" alt="Open Senséa gift box revealing six roll-on perfumed oils"
+             class="w-full rounded-sm shadow-[0_40px_90px_-35px_rgba(25,28,20,.8)]" />
+      </figure>
+
+      <!-- The six oils — placeholder names; replace with your actual blend names -->
+      <div class="mt-16 grid grid-cols-2 lg:grid-cols-3 gap-px bg-cream/15 border border-cream/15 rounded-sm overflow-hidden">
+        <article class="reveal bg-olive p-7 md:p-9 hover:bg-olive-deep transition-colors">
+          <p class="text-[11px] uppercase tracking-whisper text-gold-soft">I</p>
+          <h3 class="mt-3 font-serif text-2xl text-cream">Nostalgé</h3>
+          <p class="mt-3 text-sm leading-relaxed text-cream/70">Warm amber and soft woods — a memory carried on the skin.</p>
+        </article>
+        <article class="reveal bg-olive p-7 md:p-9 hover:bg-olive-deep transition-colors">
+          <p class="text-[11px] uppercase tracking-whisper text-gold-soft">II</p>
+          <h3 class="mt-3 font-serif text-2xl text-cream">Aurore</h3>
+          <p class="mt-3 text-sm leading-relaxed text-cream/70">Dew-bright citrus and white petals, like first light in the garden.</p>
+        </article>
+        <article class="reveal bg-olive p-7 md:p-9 hover:bg-olive-deep transition-colors">
+          <p class="text-[11px] uppercase tracking-whisper text-gold-soft">III</p>
+          <h3 class="mt-3 font-serif text-2xl text-cream">Verger</h3>
+          <p class="mt-3 text-sm leading-relaxed text-cream/70">Sun-ripened orchard fruit settling into honeyed warmth.</p>
+        </article>
+        <article class="reveal bg-olive p-7 md:p-9 hover:bg-olive-deep transition-colors">
+          <p class="text-[11px] uppercase tracking-whisper text-gold-soft">IV</p>
+          <h3 class="mt-3 font-serif text-2xl text-cream">Sillage</h3>
+          <p class="mt-3 text-sm leading-relaxed text-cream/70">A quiet floral trail — jasmine, iris, and a breath of musk.</p>
+        </article>
+        <article class="reveal bg-olive p-7 md:p-9 hover:bg-olive-deep transition-colors">
+          <p class="text-[11px] uppercase tracking-whisper text-gold-soft">V</p>
+          <h3 class="mt-3 font-serif text-2xl text-cream">Ombre</h3>
+          <p class="mt-3 text-sm leading-relaxed text-cream/70">Shaded resins and vetiver, grounded and contemplative.</p>
+        </article>
+        <article class="reveal bg-olive p-7 md:p-9 hover:bg-olive-deep transition-colors">
+          <p class="text-[11px] uppercase tracking-whisper text-gold-soft">VI</p>
+          <h3 class="mt-3 font-serif text-2xl text-cream">Lueur</h3>
+          <p class="mt-3 text-sm leading-relaxed text-cream/70">Vanilla and sandalwood glowing softly at day’s end.</p>
+        </article>
+      </div>
+
+      <p class="reveal mt-8 text-[12px] uppercase tracking-whisper text-cream/55">Organic jojoba oil · Natural essential oils · 10 ml roll-ons</p>
+    </div>
+  </section>
+
+  <div class="thread"></div>
+
+  <!-- ══════════════════ OUR STORY — the open box ══════════════════ -->
+  <section id="our-story" class="relative bg-olive-night py-24 md:py-36 overflow-hidden">
+    <div class="relative max-w-6xl mx-auto px-6 lg:px-10">
+      <p class="reveal text-center text-[12px] uppercase tracking-whisper text-gold-soft mb-14">Our Story</p>
+
+      <!-- The keepsake box: olive frame, lid crease, velvet cream interior -->
+      <div class="reveal box-frame rounded-sm p-3 md:p-5">
+        <div class="velvet rounded-[2px] overflow-hidden">
+          <!-- Lid interior strip -->
+          <div class="lid-crease bg-cream-lid px-8 md:px-16 pt-12 md:pt-16 pb-10 md:pb-14 text-center">
+            <svg viewBox="0 0 48 48" class="h-10 w-10 mx-auto mb-7" aria-hidden="true">
+              <g fill="none" stroke="#A97E3F" stroke-width="3.2" stroke-linecap="round">
+                <path d="M33 9 C 22 13, 14 19, 19 26 C 23 32, 33 28, 30 20 C 27 12, 14 21, 17 31 C 19 38, 28 40, 34 35" />
+              </g>
+            </svg>
+            <p class="font-serif italic text-xl md:text-[1.65rem] leading-[1.7] text-espresso max-w-3xl mx-auto">
+              “A brand that merges the worlds of design and fragrance, Senséa reflects a five-year
+              journey of discovery, creativity, and craftsmanship, highlighting a unique harmony
+              between sensory experience and nature’s depth.”
+            </p>
+          </div>
+
+          <!-- Box base: image above text on mobile, side-by-side on desktop -->
+          <div class="grid md:grid-cols-2">
+            <figure class="reveal order-1 p-6 md:p-10 md:pr-5">
+              <img src="assets/amoria-set.jpg" alt="Inside a Senséa box: Amoria perfume, Nostalgé oil blend, and a cedar wood disc on cream velvet"
+                   class="w-full rounded-[2px] shadow-[0_24px_50px_-24px_rgba(58,51,38,.45)]" />
+            </figure>
+            <div class="reveal reveal-late order-2 p-8 md:p-10 md:pl-5 flex flex-col justify-center text-espresso">
+              <h2 class="font-serif text-3xl md:text-4xl leading-tight text-forest font-medium">Five years, distilled.</h2>
+              <p class="mt-6 leading-relaxed text-espresso/85">
+                Each creation tells a story of passion, emotion, and imagination — curated scents
+                that inspire and uplift, holding a delicate balance between structure and fluidity.
+              </p>
+              <p class="mt-4 leading-relaxed text-espresso/85">
+                From the embossed paper of the box to the cedar disc resting inside, every detail
+                invites you into a realm of harmony and timeless beauty, reflecting a deep
+                appreciation for artistry and craftsmanship.
+              </p>
+              <a href="#contact" class="mt-9 self-start text-[13px] uppercase tracking-whisper text-gold-deep border-b border-gold/50 pb-1 hover:text-forest transition-colors">Write to us</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ FOOTER / CONTACT ══════════════════ -->
+  <footer id="contact" class="relative bg-forest text-cream/80 overflow-hidden">
+    <div class="emboss" aria-hidden="true">
+      <svg class="w-[150%] -left-[25%] top-0" viewBox="0 0 1400 400">
+        <path class="lo" stroke-width="2" d="M0 260 C 280 120, 520 320, 780 180 S 1180 80, 1400 240" transform="translate(0,2)"/>
+        <path class="hi" stroke-width="2" d="M0 260 C 280 120, 520 320, 780 180 S 1180 80, 1400 240"/>
+      </svg>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-10 py-20 md:py-28">
+      <div class="grid md:grid-cols-2 gap-14 items-start">
+        <div>
+          <span class="font-serif text-4xl text-cream">Sens<span class="italic">é</span>a</span>
+          <p class="mt-5 max-w-sm leading-relaxed text-cream/65">
+            Handcrafted fragrance, grounded in nature. Made slowly, in small batches, with patience.
+          </p>
+        </div>
+        <div>
+          <p class="text-[12px] uppercase tracking-whisper text-gold-soft">Receive the next chapter</p>
+          <form class="mt-5 flex flex-col sm:flex-row gap-4" onsubmit="event.preventDefault(); this.querySelector('p').classList.remove('hidden');">
+            <label class="sr-only" for="email">Email address</label>
+            <input id="email" type="email" required placeholder="Your email"
+                   class="flex-1 bg-transparent border border-cream/25 rounded-full px-6 py-3.5 placeholder:text-cream/40 focus:border-gold-soft" />
+            <button type="submit" class="btn-gold rounded-full px-8 py-3.5 text-[12px] uppercase tracking-[0.2em] font-medium">Subscribe</button>
+            <p class="hidden basis-full text-sm text-gold-soft">Thank you — you’re on the list.</p>
+          </form>
+        </div>
+      </div>
+
+      <div class="mt-16 pt-8 border-t border-cream/15 flex flex-col md:flex-row gap-6 justify-between text-[12px] uppercase tracking-whisper text-cream/50">
+        <p>© 2026 Senséa. All rights reserved.</p>
+        <div class="flex gap-8">
+          <a href="#" class="hover:text-gold-soft transition-colors">Instagram</a>
+          <a href="#" class="hover:text-gold-soft transition-colors">Pinterest</a>
+          <a href="#" class="hover:text-gold-soft transition-colors">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ————— Minimal scripts: scroll reveals + mobile menu ————— -->
+  <script>
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    btn.addEventListener('click', () => {
+      const open = menu.classList.toggle('hidden') === false;
+      btn.setAttribute('aria-expanded', open);
+    });
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
+  </script>
+</body>
+</html>
